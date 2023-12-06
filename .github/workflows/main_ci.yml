@@ -1,0 +1,46 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Build:
+    if: "! github.event.pull_request.draft"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: github-actions-example
+
+      - name: Build
+        run: |
+          cd $GITHUB_WORKSPACE/github-actions-example
+          mkdir build
+          cd build
+          cmake .. && make
+
+  Test:
+    if: "! github.event.pull_request.draft"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      MY_ENV: this-is-env-var #Set env variables
+    steps:
+      - name: Run Test
+        uses: actions/checkout@v3
+        with:
+          path: github-actions-example
+
+      - name: Test
+        run: |
+          cd $GITHUB_WORKSPACE/github-actions-example
+          ./test.sh
