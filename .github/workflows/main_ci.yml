@@ -27,11 +27,13 @@ jobs:
           mkdir build
           cd build
           cmake .. && make
+          ./calc
 
   Test:
     if: "! github.event.pull_request.draft"
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    needs: Build
     env:
       MY_ENV: this-is-env-var #Set env variables
     steps:
